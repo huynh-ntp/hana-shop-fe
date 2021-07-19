@@ -1,0 +1,27 @@
+#navbar {
+     display: flex;
+     align-items: center;
+     justify-content: space-between;
+     background:  #352275;
+     padding: 0px 40px;
+   }
+   
+   #navbar li {
+     padding-top: 12px;
+     list-style: none;
+     display: inline-block;
+     margin: 0px 40px; 
+     font-size: 22px;
+     color:white;
+   }
+   
+   div.nav-details > * {
+     display: inline-block;
+     color: royalblue;
+     font-size: 22px;
+     margin-right: 70px;
+   }
+
+.nav-details .link{
+     margin-left: -10px;
+}

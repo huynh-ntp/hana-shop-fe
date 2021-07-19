@@ -1,25 +1,57 @@
-import logo from './logo.svg';
 import './App.css';
-
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { Component } from 'react';
+import { MainNav } from './components/MainNav';
+import { Login } from './components/Login';
+import { Admin } from './components/Admin';
+import { Home } from './components/Home';
+import { Register } from './components/Register';
+import { Logout } from './components/Logout';
+class App extends Component {
+    state = {
+        isLoggedIn: localStorage.getItem('account') === null ? false : true,
+    };
+    componentDidMount() {
+        console.log(this.state.isLoggedIn);
+    }
+    shouldComponentUpdate() {
+        return true;
+    }
+    handleLoggedIn = () => {
+        this.setState({
+            isLoggedIn: true,
+        });
+    };
+    handleLogout = () => {
+        this.setState({
+            isLoggedIn: false,
+        });
+    };
+    render() {
+        return (
+            <Router>
+                <div className="App">
+                    <MainNav isLoggedIn={this.state.isLoggedIn}></MainNav>
+                    <Route path="/login">
+                        <Login login={this.handleLoggedIn} />
+                    </Route>
+                    <Route path="/home">
+                        <Home />
+                    </Route>
+                    <Route path="/admin">
+                        <Admin />
+                    </Route>
+                    <Route path="/register">
+                        <Register />
+                    </Route>
+                    <Route path="/logout">
+                        <Logout logout={this.handleLogout} />
+                    </Route>
+                </div>
+                ;
+            </Router>
+        );
+    }
 }
 
 export default App;

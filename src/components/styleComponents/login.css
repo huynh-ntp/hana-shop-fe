@@ -1,0 +1,30 @@
+.loginForm{
+     margin-top: 100px;
+     width: 500px;
+     padding: 30px;
+     border-style: outset;
+     margin-left: 700px;
+}
+
+.button{
+     margin-top: 15px;
+     display: inline-block;
+     margin-left: 90px;
+}
+h2{
+     text-align: center;
+}
+
+.loginForm h4{
+     margin-top: 10px;
+     text-align:  center;
+     color: red;
+}
+
+.loginForm .register{   
+     margin-left: 100px;
+}
+.error{
+     color: red;
+}
+
