@@ -22,7 +22,8 @@ export class ProductTable extends Component {
     render() {
         return (
             <div>
-                <Button color="primary" size="lg">
+                <h1 style={{ color: 'royalblue' }}>Product table</h1>
+                <Button onClick={(e) => (window.location = '/admin/createNew')} color="primary" size="lg">
                     Create new
                 </Button>
                 <Table striped>

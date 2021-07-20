@@ -1,16 +1,22 @@
 import { Component } from 'react';
-import { Col, Container, Row } from 'reactstrap';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { Col, Container, Row, ButtonToggle } from 'reactstrap';
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import { ProductTable } from './ProductTable';
 import { Dashboard } from './Dashboard';
 import { ProductDetail } from './ProductDetail';
 import { UserTable } from './UserTable';
 import { CategoryTable } from './CategoryTable';
+import { ProductCreateNew } from './ProductCreateNew';
+import { CategoryCreateNew } from './CategoryCreateNew';
 export class Admin extends Component {
-    state = {
-        listProducts: '',
-        listCategory: '',
-    };
+    state = {};
+    componentDidMount() {
+        if (JSON.parse(localStorage.getItem('account')) === null) {
+            window.location = '/';
+        } else if (JSON.parse(localStorage.getItem('account')).role === 'ROLE_CUS') {
+            window.location = '/logout';
+        }
+    }
     render() {
         return (
             <Router>
@@ -22,7 +28,12 @@ export class Admin extends Component {
                     </Row>
                     <Row>
                         <Col xs="3">
-                            <h1>Admin information here</h1>
+                            <h1>Welcome admin</h1>
+                            <h2 style={{ color: 'darkgreen' }}>{JSON.parse(localStorage.getItem('account')).fullName}</h2>
+                            <ButtonToggle onClick={(e) => (window.location = '/logout')} style={{ marginBottom: '20px' }} color="info">
+                                Logout
+                            </ButtonToggle>
+
                             <br></br>
                             <Route>
                                 <Dashboard path="/admin" />
@@ -40,6 +51,12 @@ export class Admin extends Component {
                             </Route>
                             <Route path="/admin/categoryTable">
                                 <CategoryTable />
+                            </Route>
+                            <Route path="/admin/createNew">
+                                <ProductCreateNew />
+                            </Route>
+                            <Route path="/admin/categoryCreate">
+                                <CategoryCreateNew />
                             </Route>
                         </Col>
                     </Row>

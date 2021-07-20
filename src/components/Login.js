@@ -52,7 +52,7 @@ export class Login extends Component {
                     <Button className="button" type="submit" color="success">
                         Login
                     </Button>
-                    <Link className="register" to="/signup">
+                    <Link className="register" to="/register">
                         Register
                     </Link>
                     <h4>{this.state.loginMessage}</h4>

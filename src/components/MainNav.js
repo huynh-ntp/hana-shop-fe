@@ -37,6 +37,9 @@ export class MainNav extends Component {
                 </nav>
             );
         } else {
+            if (JSON.parse(localStorage.getItem('account')).role === 'ROLE_AD') {
+                return <nav id="navbar">Admin</nav>;
+            }
             return (
                 <nav id="navbar">
                     <ul>

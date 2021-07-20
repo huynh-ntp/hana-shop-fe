@@ -11,6 +11,8 @@ export class ProductDetail extends Component {
         product: '',
         categoryList: [],
         statusChange: '',
+        errorProduct: '',
+        messageNotFound: '',
     };
 
     getCategories() {
@@ -48,7 +50,9 @@ export class ProductDetail extends Component {
                 }
             })
             .catch((error) => {
-                console.log(error.response);
+                this.setState({
+                    messageNotFound: error.response.data,
+                });
             });
     }
 
@@ -83,17 +87,20 @@ export class ProductDetail extends Component {
                 if (res.status === 200) {
                     this.setState({
                         statusChange: 'Update success!',
+                        errorProduct: '',
                     });
                 }
             })
             .catch((error) => {
-                console.log(error.response);
+                this.setState({
+                    errorProduct: error.response.data,
+                });
             });
         setTimeout(() => {
             this.setState({
                 statusChange: '',
             });
-        }, 3000);
+        }, 2000);
     }
 
     hanleDelete(e) {
@@ -109,6 +116,7 @@ export class ProductDetail extends Component {
                         this.setState({
                             statusChange: 'Delete success!',
                         });
+                        window.location = `/admin/productDetail/${this.state.product.productID}`;
                     }
                 })
                 .catch((error) => {
@@ -124,6 +132,13 @@ export class ProductDetail extends Component {
         }
     }
     render() {
+        if (this.state.messageNotFound === "Don't have any product") {
+            return (
+                <div>
+                    <h2>Product not found</h2>
+                </div>
+            );
+        }
         return (
             <div>
                 <h1 style={{ textAlign: 'center' }}>Product Detail</h1>
@@ -137,56 +152,60 @@ export class ProductDetail extends Component {
                                     </InputGroupAddon>
                                     <Input readOnly name="productID" value={this.state.product.productID} />
                                 </InputGroup>
-                                <br></br>
+                                <p style={{ color: 'red' }}>{this.state.errorProduct.productIDError}</p>
                                 <InputGroup>
                                     <InputGroupAddon addonType="prepend">
                                         <InputGroupText>Product name:</InputGroupText>
                                     </InputGroupAddon>
-                                    <Input name="productName" onChange={(e) => this.productNameOnchange(e)} value={this.state.product.productName} />
+                                    <Input name="productName" required onChange={(e) => this.productNameOnchange(e)} value={this.state.product.productName} />
                                 </InputGroup>
-                                <br></br>
+                                <p style={{ color: 'red' }}>{this.state.errorProduct.productNameError}</p>
+
                                 <InputGroup>
                                     <InputGroupAddon addonType="prepend">
                                         <InputGroupText>Description:</InputGroupText>
                                     </InputGroupAddon>
-                                    <Input name="description" onChange={(e) => this.descriptionOnchange(e)} value={this.state.product.description} />
+                                    <Input name="description" required onChange={(e) => this.descriptionOnchange(e)} value={this.state.product.description} />
                                 </InputGroup>
-                                <br></br>
+                                <p style={{ color: 'red' }}>{this.state.errorProduct.descriptionError}</p>
+
                                 <InputGroup>
                                     <InputGroupAddon addonType="prepend">
                                         <InputGroupText>Image Src:</InputGroupText>
                                     </InputGroupAddon>
-                                    <Input name="imageSrc" id="imageSrc" onChange={(e) => this.imageOnchange(e)} value={this.state.product.imageSrc} />
+                                    <Input name="imageSrc" required id="imageSrc" onChange={(e) => this.imageOnchange(e)} value={this.state.product.imageSrc} />
                                 </InputGroup>
-                                <br />
+                                <p style={{ color: 'red' }}>{this.state.errorProduct.imageSrcError}</p>
+
                                 <InputGroup>
                                     <InputGroupAddon addonType="prepend">
                                         <InputGroupText>Quantity:</InputGroupText>
                                     </InputGroupAddon>
-                                    <Input type="number" onChange={(e) => this.quantityOnchange(e)} name="quantity" min="1" value={this.state.product.quantity} />
+                                    <Input type="number" required onChange={(e) => this.quantityOnchange(e)} name="quantity" min="1" value={this.state.product.quantity} />
                                 </InputGroup>
-                                <br />
+                                <p style={{ color: 'red' }}>{this.state.errorProduct.quantityError}</p>
+
                                 <InputGroup>
                                     <InputGroupAddon addonType="prepend">
                                         <InputGroupText>Price $ :</InputGroupText>
                                     </InputGroupAddon>
-                                    <Input type="number" onChange={(e) => this.priceOnchange(e)} name="price" min="1" value={this.state.product.price} />
+                                    <Input type="number" required onChange={(e) => this.priceOnchange(e)} name="price" min="1" value={this.state.product.price} />
                                 </InputGroup>
-                                <br></br>
+                                <p style={{ color: 'red' }}>{this.state.errorProduct.priceError}</p>
                                 <InputGroup>
                                     <InputGroupAddon addonType="prepend">
                                         <InputGroupText>Create date:</InputGroupText>
                                     </InputGroupAddon>
                                     <Input name="createDate" readOnly value={this.state.product.createDate} />
                                 </InputGroup>
-                                <br></br>
+                                <p></p>
                                 <InputGroup>
                                     <InputGroupAddon addonType="prepend">
                                         <InputGroupText>Update date:</InputGroupText>
                                     </InputGroupAddon>
                                     <Input readOnly value={this.state.product.updateDate} />
                                 </InputGroup>
-                                <br></br>
+                                <p></p>
                                 <InputGroup>
                                     <InputGroupAddon addonType="prepend">
                                         <InputGroupText>Status</InputGroupText>
@@ -196,7 +215,7 @@ export class ProductDetail extends Component {
                                         <option value="false">De-Active</option>
                                     </Input>
                                 </InputGroup>
-                                <br></br>
+                                <p></p>
                                 <InputGroup>
                                     <InputGroupAddon addonType="prepend">
                                         <InputGroupText>Category</InputGroupText>
