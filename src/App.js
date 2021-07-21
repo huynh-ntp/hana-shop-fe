@@ -7,6 +7,7 @@ import { Admin } from './components/Admin';
 import { Home } from './components/Home';
 import { Register } from './components/Register';
 import { Logout } from './components/Logout';
+import { ViewCart } from './components/ViewCart';
 class App extends Component {
     state = {
         isLoggedIn: localStorage.getItem('account') === null ? false : true,
@@ -46,6 +47,9 @@ class App extends Component {
                     </Route>
                     <Route path="/logout">
                         <Logout logout={this.handleLogout} />
+                    </Route>
+                    <Route path="/viewCart">
+                        <ViewCart></ViewCart>
                     </Route>
                 </div>
                 ;

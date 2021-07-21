@@ -55,7 +55,7 @@ export class MainNav extends Component {
                         </a>
                     </ul>
                     <div className="nav-details">
-                        <Link className="link" to={'/'}>
+                        <Link className="link" to={'/viewCart'}>
                             <ButtonToggle color="primary">ViewCart</ButtonToggle>
                         </Link>
                         <Link className="link" to={'/userDetails'}>

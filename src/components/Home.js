@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Component } from 'react';
-import { Container, Row, Col, Card, CardImg, CardText, CardBody, CardTitle, CardSubtitle, Button, InputGroup, Input, InputGroupAddon, InputGroupText, Pagination, PaginationItem, PaginationLink } from 'reactstrap';
+import { Container, Form, Row, Col, Card, CardImg, CardText, CardBody, CardTitle, CardSubtitle, Button, InputGroup, Input, Pagination, PaginationItem, PaginationLink } from 'reactstrap';
 export class Home extends Component {
     state = {
         productEndpoint: 'http://localhost:8000/product',
@@ -28,7 +28,6 @@ export class Home extends Component {
                 });
             }
         });
-        this.getCategories();
     }
     getCategories() {
         axios
@@ -67,48 +66,185 @@ export class Home extends Component {
             productListDisplay: productListDisplay,
         });
     }
+    handleSearch(e) {
+        e.preventDefault();
+        if (e.target.categoryID.value === '0') {
+            this.searchByName(e.target.productName.value);
+        } else {
+            this.searchByNameAndCategory(e.target.productName.value, e.target.categoryID.value);
+        }
+    }
+    searchByName(name) {
+        axios
+            .get(`${this.state.productEndpoint}/${name}`)
+            .then((res) => {
+                if (res.status === 200) {
+                    this.setState({
+                        productList: res.data,
+                        totalPage: Math.ceil(res.data.length / this.state.pageSize),
+                    });
+                    console.log(res.data);
+                    let productListDisplay = [];
+                    for (var i = 0; i < this.state.pageSize && i < this.state.productList.length; i++) {
+                        productListDisplay.push(this.state.productList[i]);
+                    }
+                    this.setState({
+                        productListDisplay: productListDisplay,
+                    });
+                }
+            })
+            .catch((error) => {
+                let emptyList = [];
+                this.setState({
+                    productList: emptyList,
+                    productListDisplay: emptyList,
+                    curIndexPage: 1,
+                    totalPage: 0,
+                });
+                console.log(this.state.productList);
+            });
+        console.log('find by name done');
+    }
+    searchByNameAndCategory(name, category) {
+        if (name.length === 0) {
+            name = 'no';
+        }
+        axios
+            .get(`${this.state.productEndpoint}/${name}/${category}`)
+            .then((res) => {
+                if (res.status === 200) {
+                    this.setState({
+                        productList: res.data,
+                        totalPage: Math.ceil(res.data.length / this.state.pageSize),
+                    });
+                    let productListDisplay = [];
+                    for (var i = 0; i < this.state.pageSize && i < this.state.productList.length; i++) {
+                        productListDisplay.push(this.state.productList[i]);
+                    }
+                    this.setState({
+                        productListDisplay: productListDisplay,
+                    });
+                }
+            })
+            .catch((error) => {
+                let emptyList = [];
+                this.setState({
+                    productList: emptyList,
+                    productListDisplay: emptyList,
+                    curIndexPage: 1,
+                    totalPage: 0,
+                });
+            });
+    }
+    addToCart(e) {
+        e.preventDefault();
+        let cart = [];
+        if (localStorage.getItem('cart') != null) {
+            cart = JSON.parse(localStorage.getItem('cart'));
+        }
+        let product = {
+            productID: e.target.productID.value,
+            quantity: 1,
+            price: e.target.price.value,
+            imageSrc: e.target.imageSrc.value,
+            productName: e.target.productName.value,
+            description: e.target.description.value,
+        };
+        let isAdded = false;
+        cart.map((pro) => {
+            if (pro.productID === product.productID) {
+                pro.quantity = pro.quantity + 1;
+                localStorage.setItem('cart', JSON.stringify(cart));
+                isAdded = true;
+            }
+        });
+        if (!isAdded) {
+            cart.push(product);
+            localStorage.setItem('cart', JSON.stringify(cart));
+        }
+        console.log(cart);
+    }
     render() {
+        if (this.state.productListDisplay.length === 0) {
+            return (
+                <Container>
+                    <Row>
+                        <Col sm="3">
+                            <Form onSubmit={(e) => this.handleSearch(e)}>
+                                <Input placeholder="Search name" name="productName"></Input>
+                                <br></br>
+                                <InputGroup>
+                                    <Input type="select" name="categoryID" id="categoryID">
+                                        <option value="0">Select category</option>
+                                        {this.state.categoryList.map((cate) => (
+                                            <option value={cate.categoryID}>{cate.categoryName}</option>
+                                        ))}
+                                    </Input>
+                                </InputGroup>
+                                <br></br>
+                                <Button type="submit">Search</Button>
+                            </Form>
+                        </Col>
+                        <Col sm="9">
+                            <img style={{ width: '100%' }} src="https://www.uniformsatmetrotex.com//assets/custom/images/product-not-found.png" />
+                        </Col>
+                    </Row>
+                </Container>
+            );
+        }
         return (
             <Container>
                 <Row>
                     <Col sm="3">
-                        <InputGroup>
-                            <InputGroupAddon addonType="prepend">
-                                <InputGroupText>Category</InputGroupText>
-                            </InputGroupAddon>
-                            <Input type="select" name="categoryID" id="categoryID">
-                                {this.state.categoryList.map((cate) => (
-                                    <option value={cate.categoryID}>{cate.categoryName}</option>
-                                ))}
-                            </Input>
-                        </InputGroup>
+                        <Form onSubmit={(e) => this.handleSearch(e)}>
+                            <Input placeholder="Search name" name="productName"></Input>
+                            <br></br>
+                            <InputGroup>
+                                <Input type="select" name="categoryID" id="categoryID">
+                                    <option value="0">Select category</option>
+                                    {this.state.categoryList.map((cate) => (
+                                        <option value={cate.categoryID}>{cate.categoryName}</option>
+                                    ))}
+                                </Input>
+                            </InputGroup>
+                            <br></br>
+                            <Button type="submit">Search</Button>
+                        </Form>
                     </Col>
                     <Col sm="9">
                         <Row>
                             {this.state.productListDisplay.map((pro, index) => (
                                 <Col sm="4">
-                                    <Card>
-                                        <CardImg style={{ width: '100%', height: '250px' }} src={pro.imageSrc} alt="Card image cap" />
-                                        <CardBody>
-                                            <CardTitle tag="h5">{pro.productName}</CardTitle>
-                                            <CardSubtitle tag="h6" className="mb-2 text-muted">
-                                                {`Price: ${pro.price} $`}
-                                            </CardSubtitle>
-                                            <CardText>{pro.description}</CardText>
-                                            {pro.status ? (
-                                                <Button style={{ marginLeft: '10%' }} color="danger">
-                                                    Add to cart
+                                    <Form onSubmit={(e) => this.addToCart(e)}>
+                                        <Input type="hidden" value={pro.productID} name="productID"></Input>
+                                        <Input type="hidden" value={pro.price} name="price"></Input>
+                                        <Input type="hidden" value={pro.quantity} name="quantity"></Input>
+                                        <Input type="hidden" value={pro.imageSrc} name="imageSrc"></Input>
+                                        <Input type="hidden" value={pro.productName} name="productName"></Input>
+                                        <Input type="hidden" value={pro.description} name="description"></Input>
+                                        <Card>
+                                            <CardImg style={{ width: '100%', height: '250px' }} src={pro.imageSrc} alt="Card image cap" />
+                                            <CardBody>
+                                                <CardTitle tag="h5">{pro.productName}</CardTitle>
+                                                <CardSubtitle tag="h6" className="mb-2 text-muted">
+                                                    {`Price: ${pro.price} $`}
+                                                </CardSubtitle>
+                                                <CardText>{pro.description}</CardText>
+                                                {pro.status ? (
+                                                    <Button type="submit" style={{ marginLeft: '10%' }} color="danger">
+                                                        Add to cart
+                                                    </Button>
+                                                ) : (
+                                                    <Button style={{ marginLeft: '10%' }} disabled color="danger">
+                                                        Add to cart
+                                                    </Button>
+                                                )}
+                                                <Button style={{ marginLeft: '15%' }} color="warning">
+                                                    Detail
                                                 </Button>
-                                            ) : (
-                                                <Button style={{ marginLeft: '10%' }} disabled color="danger">
-                                                    Add to cart
-                                                </Button>
-                                            )}
-                                            <Button style={{ marginLeft: '15%' }} color="warning">
-                                                Detail
-                                            </Button>
-                                        </CardBody>
-                                    </Card>
+                                            </CardBody>
+                                        </Card>
+                                    </Form>
                                 </Col>
                             ))}
                         </Row>

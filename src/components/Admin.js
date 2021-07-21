@@ -8,6 +8,7 @@ import { UserTable } from './UserTable';
 import { CategoryTable } from './CategoryTable';
 import { ProductCreateNew } from './ProductCreateNew';
 import { CategoryCreateNew } from './CategoryCreateNew';
+import { ManagerBanner } from './ManagerBanner';
 export class Admin extends Component {
     state = {};
     componentDidMount() {
@@ -40,6 +41,9 @@ export class Admin extends Component {
                             </Route>
                         </Col>
                         <Col xs="9">
+                            <Route exact path="/admin">
+                                <ManagerBanner></ManagerBanner>
+                            </Route>
                             <Route path="/admin/productTable">
                                 <ProductTable />
                             </Route>
