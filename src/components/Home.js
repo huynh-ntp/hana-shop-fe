@@ -11,6 +11,7 @@ export class Home extends Component {
         curIndexPage: 1,
         totalPage: 0,
         pageSize: 9,
+        statusAdd: '',
     };
     getListProduct() {
         axios.get(this.state.productEndpoint).then((res) => {
@@ -51,6 +52,12 @@ export class Home extends Component {
     componentDidMount() {
         this.getListProduct();
         this.getCategories();
+        let account = JSON.parse(localStorage.getItem('account'));
+        if (account != null) {
+            if (account.role === 'ROLE_AD') {
+                window.location = '/logout';
+            }
+        }
     }
     handleChangePage(index) {
         this.setState({
@@ -138,6 +145,9 @@ export class Home extends Component {
     }
     addToCart(e) {
         e.preventDefault();
+        if (localStorage.getItem('account') === null) {
+            window.location = '/login';
+        }
         let cart = [];
         if (localStorage.getItem('cart') != null) {
             cart = JSON.parse(localStorage.getItem('cart'));
@@ -162,7 +172,14 @@ export class Home extends Component {
             cart.push(product);
             localStorage.setItem('cart', JSON.stringify(cart));
         }
-        console.log(cart);
+        this.setState({
+            statusAdd: 'Add success!',
+        });
+        setTimeout(() => {
+            this.setState({
+                statusAdd: '',
+            });
+        }, 2000);
     }
     render() {
         if (this.state.productListDisplay.length === 0) {
@@ -209,6 +226,8 @@ export class Home extends Component {
                             </InputGroup>
                             <br></br>
                             <Button type="submit">Search</Button>
+                            <br></br>
+                            <h3 style={{ color: 'red' }}>{this.state.statusAdd}</h3>
                         </Form>
                     </Col>
                     <Col sm="9">

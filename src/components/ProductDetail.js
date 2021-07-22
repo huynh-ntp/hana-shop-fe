@@ -13,6 +13,7 @@ export class ProductDetail extends Component {
         statusChange: '',
         errorProduct: '',
         messageNotFound: '',
+        imageNotSupport: '',
     };
 
     getCategories() {
@@ -169,13 +170,23 @@ export class ProductDetail extends Component {
                                 </InputGroup>
                                 <p style={{ color: 'red' }}>{this.state.errorProduct.descriptionError}</p>
 
-                                <InputGroup>
+                                {/* <InputGroup>
                                     <InputGroupAddon addonType="prepend">
                                         <InputGroupText>Image Src:</InputGroupText>
                                     </InputGroupAddon>
                                     <Input name="imageSrc" required id="imageSrc" onChange={(e) => this.imageOnchange(e)} value={this.state.product.imageSrc} />
                                 </InputGroup>
+                                <p style={{ color: 'red' }}>{this.state.errorProduct.imageSrcError}</p> */}
+
+                                <InputGroup>
+                                    <InputGroupAddon addonType="prepend">
+                                        <InputGroupText>Image Src:</InputGroupText>
+                                    </InputGroupAddon>
+                                    <Input type="file" accept="image/*" id="imageSrc" onChange={(e) => this.imageOnchange(e)} />
+                                    <Input type="hidden" name="imageSrc" value={this.state.product.imageSrc}></Input>
+                                </InputGroup>
                                 <p style={{ color: 'red' }}>{this.state.errorProduct.imageSrcError}</p>
+                                <p style={{ color: 'red' }}>{this.state.imageNotSupport}</p>
 
                                 <InputGroup>
                                     <InputGroupAddon addonType="prepend">
@@ -184,12 +195,11 @@ export class ProductDetail extends Component {
                                     <Input type="number" required onChange={(e) => this.quantityOnchange(e)} name="quantity" min="1" value={this.state.product.quantity} />
                                 </InputGroup>
                                 <p style={{ color: 'red' }}>{this.state.errorProduct.quantityError}</p>
-
                                 <InputGroup>
                                     <InputGroupAddon addonType="prepend">
                                         <InputGroupText>Price $ :</InputGroupText>
                                     </InputGroupAddon>
-                                    <Input type="number" required onChange={(e) => this.priceOnchange(e)} name="price" min="1" value={this.state.product.price} />
+                                    <Input type="number" step="0.01" required onChange={(e) => this.priceOnchange(e)} name="price" min="1" value={this.state.product.price} />
                                 </InputGroup>
                                 <p style={{ color: 'red' }}>{this.state.errorProduct.priceError}</p>
                                 <InputGroup>
@@ -245,11 +255,23 @@ export class ProductDetail extends Component {
         );
     }
     imageOnchange(e) {
-        let newProduct = this.state.product;
-        newProduct.imageSrc = e.target.value;
-        this.setState({
-            product: newProduct,
-        });
+        let imageSrc = e.target.value;
+        if (imageSrc.split('.')[1] !== 'jpg' && imageSrc.split('.')[1] !== 'gif' && imageSrc.split('.')[1] !== 'png') {
+            this.setState({
+                imageNotSupport: 'Unsupported image format( just png,gif,jpg)',
+            });
+            setTimeout(() => {
+                this.setState({
+                    imageNotSupport: '',
+                });
+            }, 4000);
+        } else {
+            let newProduct = this.state.product;
+            newProduct.imageSrc = `/productImage/${imageSrc.split('\\')[2]}`;
+            this.setState({
+                product: newProduct,
+            });
+        }
     }
     productNameOnchange(e) {
         let newProduct = this.state.product;

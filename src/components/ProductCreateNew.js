@@ -10,6 +10,7 @@ export class ProductCreateNew extends Component {
         categoryEndPoint: 'http://localhost:8000/category',
         categoryList: [],
         errorProduct: '',
+        imageNotSupport: '',
     };
 
     getCategories() {
@@ -90,9 +91,11 @@ export class ProductCreateNew extends Component {
                                     <InputGroupAddon addonType="prepend">
                                         <InputGroupText>Image Src:</InputGroupText>
                                     </InputGroupAddon>
-                                    <Input required onChange={(e) => this.imageOnchange(e)} name="imageSrc" id="imageSrc" />
+                                    <Input required type="file" onChange={(e) => this.imageOnchange(e)} />
+                                    <Input type="hidden" id="imageSrc" name="imageSrc"></Input>
                                 </InputGroup>
                                 <p style={{ color: 'red' }}>{this.state.errorProduct.imageSrcError}</p>
+                                <p style={{ color: 'red' }}>{this.state.imageNotSupport}</p>
                                 <InputGroup>
                                     <InputGroupAddon addonType="prepend">
                                         <InputGroupText>Quantity:</InputGroupText>
@@ -104,7 +107,7 @@ export class ProductCreateNew extends Component {
                                     <InputGroupAddon addonType="prepend">
                                         <InputGroupText>Price $ :</InputGroupText>
                                     </InputGroupAddon>
-                                    <Input required type="number" name="price" min="1" />
+                                    <Input required type="number" name="price" step="0.01" min="1" />
                                 </InputGroup>
                                 <p style={{ color: 'red' }}>{this.state.errorProduct.priceError}</p>
                                 <InputGroup>
@@ -133,6 +136,19 @@ export class ProductCreateNew extends Component {
         );
     }
     imageOnchange(e) {
-        document.getElementById('imageScrDisplay').src = e.target.value;
+        let imageSrc = e.target.value;
+        if (imageSrc.split('.')[1] !== 'jpg' && imageSrc.split('.')[1] !== 'gif' && imageSrc.split('.')[1] !== 'png') {
+            this.setState({
+                imageNotSupport: 'Unsupported image format( just png,gif,jpg)',
+            });
+            setTimeout(() => {
+                this.setState({
+                    imageNotSupport: '',
+                });
+            }, 4000);
+        } else {
+            document.getElementById('imageSrc').value = `/productImage/${imageSrc.split('\\')[2]}`;
+            document.getElementById('imageScrDisplay').src = `/productImage/${imageSrc.split('\\')[2]}`;
+        }
     }
 }
