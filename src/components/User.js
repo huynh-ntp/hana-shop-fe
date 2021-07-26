@@ -5,7 +5,6 @@ import { UserDashboard } from './UserDashboard';
 import { UserDetail } from './UserDetail';
 import { PasswordChange } from './PasswordChange';
 import { ShippingInfo } from './ShippingInfo';
-import { PurcharseHistory } from './PurcharseHistory';
 export class User extends Component {
     componentDidMount() {
         if (JSON.parse(localStorage.getItem('account')) === null) {
@@ -36,9 +35,6 @@ export class User extends Component {
                             </Route>
                             <Route exact path="/user/shippingInfo">
                                 <ShippingInfo></ShippingInfo>
-                            </Route>
-                            <Route exact path="/user/purchaseHistory">
-                                <PurcharseHistory />
                             </Route>
                         </Col>
                     </Row>

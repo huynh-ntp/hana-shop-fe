@@ -5,7 +5,7 @@ import React from 'react';
 import { InputGroup, InputGroupText, InputGroupAddon, Input, Label } from 'reactstrap';
 export class ProductDetail extends Component {
     state = {
-        token: `Bearer ${JSON.parse(localStorage.getItem('account')).token}`,
+        token: localStorage.getItem('account') !== null ? `Bearer ${JSON.parse(localStorage.getItem('account')).token}` : '',
         productEndPoint: 'http://localhost:8000/product',
         categoryEndPoint: 'http://localhost:8000/category',
         product: '',

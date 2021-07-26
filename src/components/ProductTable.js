@@ -1,11 +1,15 @@
 import axios from 'axios';
 import { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Table, Button } from 'reactstrap';
+import { Table, Button, Pagination, PaginationItem, PaginationLink } from 'reactstrap';
 
 export class ProductTable extends Component {
     state = {
         productList: [],
+        productListDisplay: [],
+        curIndexPage: 1,
+        totalPage: 0,
+        pageSize: 10,
     };
 
     componentDidMount() {
@@ -13,11 +17,32 @@ export class ProductTable extends Component {
             if (res.status === 200) {
                 this.setState({
                     productList: res.data,
+                    totalPage: Math.ceil(res.data.length / this.state.pageSize),
+                });
+                let productListDisplay = [];
+                for (var i = 0; i < this.state.pageSize && i < this.state.productList.length; i++) {
+                    productListDisplay.push(this.state.productList[i]);
+                }
+                this.setState({
+                    productListDisplay: productListDisplay,
                 });
             }
         });
     }
-    handleDelete() {}
+    handleChangePage(index) {
+        this.setState({
+            curIndexPage: index,
+        });
+        let productListDisplay = [];
+        let startIndex = (index - 1) * this.state.pageSize;
+        let endIndex = index * this.state.pageSize;
+        for (var i = startIndex; i < endIndex && i < this.state.productList.length; i++) {
+            productListDisplay.push(this.state.productList[i]);
+        }
+        this.setState({
+            productListDisplay: productListDisplay,
+        });
+    }
     render() {
         return (
             <div>
@@ -35,7 +60,7 @@ export class ProductTable extends Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.state.productList.map((pro) => (
+                        {this.state.productListDisplay.map((pro) => (
                             <tr key={pro.productID}>
                                 <td>{pro.productID}</td>
                                 <td>{pro.productName}</td>
@@ -49,6 +74,15 @@ export class ProductTable extends Component {
                         ))}
                     </tbody>
                 </Table>
+                <div style={{ marginTop: '20px' }}>
+                    <Pagination style={{ textAlign: 'center' }} size="lg" aria-label="Page navigation example">
+                        {[...Array(this.state.totalPage)].map((el, index) => (
+                            <PaginationItem onClick={() => this.handleChangePage(index + 1)}>
+                                <PaginationLink>{index + 1}</PaginationLink>
+                            </PaginationItem>
+                        ))}
+                    </Pagination>
+                </div>
             </div>
         );
     }

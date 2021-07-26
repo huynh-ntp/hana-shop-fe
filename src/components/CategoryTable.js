@@ -4,7 +4,7 @@ import { Table, Button } from 'reactstrap';
 
 export class CategoryTable extends Component {
     state = {
-        token: `Bearer ${JSON.parse(localStorage.getItem('account')).token}`,
+        token: localStorage.getItem('account') !== null ? `Bearer ${JSON.parse(localStorage.getItem('account')).token}` : '',
         categoryEndPoint: 'http://localhost:8000/category',
         categoryList: [],
     };
@@ -19,7 +19,7 @@ export class CategoryTable extends Component {
                 }
             })
             .catch((error) => {
-                console.log(error.response);
+                console.log(error.response.data);
             });
     }
 
@@ -38,13 +38,17 @@ export class CategoryTable extends Component {
                         <tr>
                             <th>CategoryID</th>
                             <th>CategoryName</th>
+                            <th>Detail</th>
                         </tr>
                     </thead>
                     <tbody>
                         {this.state.categoryList.map((cate) => (
-                            <tr>
+                            <tr key={cate.categoryID}>
                                 <td>{cate.categoryID}</td>
                                 <td>{cate.categoryName}</td>
+                                <td>
+                                    <Button onClick={() => (window.location = `/admin/categoryDetail/${cate.categoryID}`)}>Detail</Button>
+                                </td>
                             </tr>
                         ))}
                     </tbody>

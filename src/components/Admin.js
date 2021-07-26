@@ -10,6 +10,7 @@ import { ProductCreateNew } from './ProductCreateNew';
 import { CategoryCreateNew } from './CategoryCreateNew';
 import { ManagerBanner } from './ManagerBanner';
 import { Forbidden } from './Forbidden';
+import { CategoryDetail } from './CategoryDetail';
 export class Admin extends Component {
     state = {};
     componentDidMount() {
@@ -60,6 +61,9 @@ export class Admin extends Component {
                             </Route>
                             <Route path="/admin/categoryCreate">
                                 <CategoryCreateNew />
+                            </Route>
+                            <Route path="/admin/categoryDetail">
+                                <CategoryDetail />
                             </Route>
                         </Col>
                     </Row>
