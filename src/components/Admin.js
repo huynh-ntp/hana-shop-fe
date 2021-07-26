@@ -1,43 +1,42 @@
 import { Component } from 'react';
 import { Col, Container, Row, ButtonToggle } from 'reactstrap';
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { ProductTable } from './ProductTable';
-import { Dashboard } from './Dashboard';
+import { AdminDashboard } from './AdminDashboard';
 import { ProductDetail } from './ProductDetail';
 import { UserTable } from './UserTable';
 import { CategoryTable } from './CategoryTable';
 import { ProductCreateNew } from './ProductCreateNew';
 import { CategoryCreateNew } from './CategoryCreateNew';
 import { ManagerBanner } from './ManagerBanner';
+import { Forbidden } from './Forbidden';
 export class Admin extends Component {
     state = {};
     componentDidMount() {
         if (JSON.parse(localStorage.getItem('account')) === null) {
-            window.location = '/';
+            window.location = '/forbidden';
         } else if (JSON.parse(localStorage.getItem('account')).role === 'ROLE_CUS') {
-            window.location = '/logout';
+            window.location = '/forbidden';
         }
     }
     render() {
         return (
             <Router>
                 <Container className="container">
-                    <Row>
-                        <Col xs="3"></Col>
-
-                        <Col xs="9"></Col>
-                    </Row>
+                    <Route path="/forbidden">
+                        <Forbidden />
+                    </Route>
                     <Row>
                         <Col xs="3">
                             <h1>Welcome admin</h1>
-                            <h2 style={{ color: 'darkgreen' }}>{JSON.parse(localStorage.getItem('account')).fullName}</h2>
+                            <h2 style={{ color: 'darkgreen' }}>{localStorage.getItem('account') !== null ? JSON.parse(localStorage.getItem('account')).fullName : ''}</h2>
                             <ButtonToggle onClick={(e) => (window.location = '/logout')} style={{ marginBottom: '20px' }} color="info">
                                 Logout
                             </ButtonToggle>
 
                             <br></br>
                             <Route>
-                                <Dashboard path="/admin" />
+                                <AdminDashboard path="/admin" />
                             </Route>
                         </Col>
                         <Col xs="9">

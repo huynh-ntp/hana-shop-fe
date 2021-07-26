@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { Component } from 'react';
 import { Table, Button } from 'reactstrap';
+
 export class UserTable extends Component {
     state = {
         userList: [],

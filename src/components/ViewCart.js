@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Component } from 'react';
-import { Container, Row, Col, Form, FormGroup, Input, Label } from 'reactstrap';
+import { Container, Row, Col, Form, FormGroup, Input, Label, Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import './styleComponents/cart.css';
 export class ViewCart extends Component {
     state = {
@@ -15,19 +15,43 @@ export class ViewCart extends Component {
         shipping: 2,
         grandTotal: 0,
         customer: '',
+        modal: false,
+        orderSuccess: {
+            orderID: '',
+            address: '',
+            orderDate: '',
+            phone: '',
+            totalPrice: '',
+            typePay: '',
+            userName: '',
+        },
     };
     componentDidMount() {
         let account = JSON.parse(localStorage.getItem('account'));
-        if (account === null) {
-            window.location = '/home';
-        } else if (account.role === 'ROLE_AD') {
-            window.location = 'logout';
+        if (account !== null) {
+            if (account.role === 'ROLE_AD') {
+                window.location = 'forbidden';
+            }
+            this.setState({
+                account: account,
+                token: `Bearer ${account.token}`,
+            });
+            axios
+                .get(`${this.state.customerEndpoint}/${account.username}`, {
+                    headers: {
+                        Authorization: 'Bearer ' + account.token,
+                    },
+                })
+                .then((res) => {
+                    this.setState({
+                        customer: res.data,
+                    });
+                })
+                .catch((error) => {
+                    console.log(error.response.data);
+                });
         }
-        console.log(account);
-        this.setState({
-            account: account,
-            token: `Bearer ${account.token}`,
-        });
+
         let temp = JSON.parse(localStorage.getItem('cart'));
         let subTotal = 0;
         if (temp != null) {
@@ -39,25 +63,11 @@ export class ViewCart extends Component {
             });
             let tax = (subTotal * 5) / 100;
             this.setState({
-                subTotal: subTotal,
-                tax: tax,
-                grandTotal: subTotal + tax + this.state.shipping,
+                subTotal: subTotal.toFixed(2),
+                tax: tax.toFixed(2),
+                grandTotal: (subTotal + tax + this.state.shipping).toFixed(2),
             });
         }
-        axios
-            .get(`${this.state.customerEndpoint}/${account.username}`, {
-                headers: {
-                    Authorization: 'Bearer ' + account.token,
-                },
-            })
-            .then((res) => {
-                this.setState({
-                    customer: res.data,
-                });
-            })
-            .catch((error) => {
-                console.log(error.response.data);
-            });
     }
 
     handleDelete(productID) {
@@ -73,9 +83,9 @@ export class ViewCart extends Component {
         let tax = (subTotal * 5) / 100;
         this.setState({
             cart: temp,
-            subTotal: subTotal,
-            tax: tax,
-            grandTotal: subTotal + tax + this.state.shipping,
+            subTotal: subTotal.toFixed(2),
+            tax: tax.toFixed(2),
+            grandTotal: (subTotal + tax + this.state.shipping).toFixed(2),
         });
     }
 
@@ -93,15 +103,20 @@ export class ViewCart extends Component {
             localStorage.setItem('cart', JSON.stringify(temp));
             this.setState({
                 cart: temp,
-                subTotal: subTotal,
-                tax: tax,
-                grandTotal: subTotal + tax + this.state.shipping,
+                subTotal: subTotal.toFixed(2),
+                tax: tax.toFixed(2),
+                grandTotal: (subTotal + tax + this.state.shipping).toFixed(2),
             });
         }
     }
 
     handleCheckout(e) {
         e.preventDefault();
+        if (this.state.account === '') {
+            window.location = '/login';
+        } else if (this.state.account.role === 'ROLE_AD') {
+            window.location = '/forbidden    ';
+        }
         axios
             .post(
                 this.state.orderEndpoint,
@@ -117,7 +132,10 @@ export class ViewCart extends Component {
             )
             .then((res) => {
                 localStorage.removeItem('cart');
-                window.location = '/orderSuccess';
+                this.setState({
+                    orderSuccess: res.data,
+                    modal: !this.state.modal,
+                });
             })
             .catch((error) => {
                 this.setState({
@@ -183,7 +201,7 @@ export class ViewCart extends Component {
                                             Remove
                                         </button>
                                     </div>
-                                    <div class="product-line-price">{pro.quantity * pro.price}</div>
+                                    <div class="product-line-price">{(pro.quantity * pro.price).toFixed(2)}</div>
                                 </div>
                             ))}
                             <Row>
@@ -240,10 +258,44 @@ export class ViewCart extends Component {
                         </Form>
                     </Col>
                 </Row>
+                <Modal isOpen={this.state.modal}>
+                    <ModalHeader>Thanks for purchase</ModalHeader>
+                    <ModalBody>
+                        <h6>{`OrderID: ${this.state.orderSuccess.orderID}`}</h6>
+                        <h6>{`Username: ${this.state.orderSuccess.userName}`}</h6>
+                        <h6>{`Total: ${this.state.orderSuccess.totalPrice}$`}</h6>
+                        <h6>{`Address: ${this.state.orderSuccess.address}`}</h6>
+                        <h6>{`Phone: ${this.state.orderSuccess.phone}`}</h6>
+                        <h6>{`Type pay: ${this.state.orderSuccess.typePay}`}</h6>
+                        <h6>{`Order date: ${new Date(this.state.orderSuccess.orderDate)}`}</h6>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button
+                            color="primary"
+                            onClick={() => {
+                                this.setState({ modal: !this.state.modal });
+                                window.location = '/home';
+                            }}
+                        >
+                            Continue Shopping
+                        </Button>{' '}
+                        <Button
+                            color="secondary"
+                            onClick={() => {
+                                this.setState({ modal: !this.state.modal });
+                            }}
+                        >
+                            History Purchase
+                        </Button>
+                    </ModalFooter>
+                </Modal>
             </Container>
         );
     }
     addressChange(address) {
+        if (this.state.account === '') {
+            window.location = '/login';
+        }
         let customer = this.state.customer;
         customer.address = address;
         this.setState({
@@ -252,6 +304,9 @@ export class ViewCart extends Component {
     }
 
     phoneChange(phone) {
+        if (this.state.account === '') {
+            window.location = '/login';
+        }
         let customer = this.state.customer;
         customer.phone = phone;
         this.setState({

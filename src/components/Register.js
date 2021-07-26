@@ -80,7 +80,7 @@ export class Register extends Component {
                     <Button className="button" type="submit" color="success">
                         Register
                     </Button>
-                    <Link className="register" to="/signin">
+                    <Link className="register" to="/login">
                         I have account!
                     </Link>
                     <h4>{this.state.successMessage}</h4>

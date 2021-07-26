@@ -2,7 +2,7 @@ import { Component } from 'react';
 import { ListGroup, ListGroupItem } from 'reactstrap';
 import './styleComponents/admin.css';
 
-export class Dashboard extends Component {
+export class AdminDashboard extends Component {
     render() {
         return (
             <div>
@@ -15,12 +15,6 @@ export class Dashboard extends Component {
                     </ListGroupItem>
                     <ListGroupItem tag="a" href="/admin/categoryTable" action>
                         Categories
-                    </ListGroupItem>
-                    <ListGroupItem tag="a" href="#" action>
-                        Order
-                    </ListGroupItem>
-                    <ListGroupItem disabled tag="a" href="#" action>
-                        Report
                     </ListGroupItem>
                 </ListGroup>
             </div>

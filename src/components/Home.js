@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Component } from 'react';
-import { Container, Form, Row, Col, Card, CardImg, CardText, CardBody, CardTitle, CardSubtitle, Button, InputGroup, Input, Pagination, PaginationItem, PaginationLink } from 'reactstrap';
+import { Container, Modal, ModalBody, ModalHeader, ModalFooter, Form, Row, Col, Card, CardImg, CardText, CardBody, CardTitle, CardSubtitle, Button, InputGroup, Input, Pagination, PaginationItem, PaginationLink } from 'reactstrap';
 export class Home extends Component {
     state = {
         productEndpoint: 'http://localhost:8000/product',
@@ -11,7 +11,7 @@ export class Home extends Component {
         curIndexPage: 1,
         totalPage: 0,
         pageSize: 9,
-        statusAdd: '',
+        modal: false,
     };
     getListProduct() {
         axios.get(this.state.productEndpoint).then((res) => {
@@ -52,12 +52,6 @@ export class Home extends Component {
     componentDidMount() {
         this.getListProduct();
         this.getCategories();
-        let account = JSON.parse(localStorage.getItem('account'));
-        if (account != null) {
-            if (account.role === 'ROLE_AD') {
-                window.location = '/logout';
-            }
-        }
     }
     handleChangePage(index) {
         this.setState({
@@ -145,8 +139,11 @@ export class Home extends Component {
     }
     addToCart(e) {
         e.preventDefault();
-        if (localStorage.getItem('account') === null) {
-            window.location = '/login';
+        let account = JSON.parse(localStorage.getItem('account'));
+        if (account != null) {
+            if (account.role === 'ROLE_AD') {
+                window.location = '/forbidden';
+            }
         }
         let cart = [];
         if (localStorage.getItem('cart') != null) {
@@ -173,14 +170,10 @@ export class Home extends Component {
             localStorage.setItem('cart', JSON.stringify(cart));
         }
         this.setState({
-            statusAdd: 'Add success!',
+            modal: true,
         });
-        setTimeout(() => {
-            this.setState({
-                statusAdd: '',
-            });
-        }, 2000);
     }
+
     render() {
         if (this.state.productListDisplay.length === 0) {
             return (
@@ -203,7 +196,7 @@ export class Home extends Component {
                             </Form>
                         </Col>
                         <Col sm="9">
-                            <img style={{ width: '100%' }} src="https://www.uniformsatmetrotex.com//assets/custom/images/product-not-found.png" />
+                            <img style={{ width: '100%' }} src="productImage/productNotFound.png" />
                         </Col>
                     </Row>
                 </Container>
@@ -248,7 +241,9 @@ export class Home extends Component {
                                                 <CardSubtitle tag="h6" className="mb-2 text-muted">
                                                     {`Price: ${pro.price} $`}
                                                 </CardSubtitle>
-                                                <CardText>{pro.description}</CardText>
+                                                {pro.status && <p style={{ color: 'green' }}>Stocking</p>}
+                                                {!pro.status && <p style={{ color: 'red' }}>Out of stock</p>}
+                                                <CardText></CardText>
                                                 {pro.status ? (
                                                     <Button type="submit" style={{ marginLeft: '10%' }} color="danger">
                                                         Add to cart
@@ -258,7 +253,7 @@ export class Home extends Component {
                                                         Add to cart
                                                     </Button>
                                                 )}
-                                                <Button style={{ marginLeft: '15%' }} color="warning">
+                                                <Button style={{ marginLeft: '15%' }} onClick={() => (window.location = `/productDetail/${pro.productID}`)} color="warning">
                                                     Detail
                                                 </Button>
                                             </CardBody>
@@ -278,6 +273,31 @@ export class Home extends Component {
                         </div>
                     </Col>
                 </Row>
+                <div>
+                    <Modal isOpen={this.state.modal}>
+                        <ModalHeader>HanaShop</ModalHeader>
+                        <ModalBody style={{ color: 'red' }}>Add success!</ModalBody>
+                        <ModalFooter>
+                            <Button
+                                color="primary"
+                                onClick={() => {
+                                    this.setState({ modal: !this.state.modal });
+                                    window.location = '/viewCart';
+                                }}
+                            >
+                                View Cart
+                            </Button>{' '}
+                            <Button
+                                color="secondary"
+                                onClick={() => {
+                                    this.setState({ modal: !this.state.modal });
+                                }}
+                            >
+                                Continue buy
+                            </Button>
+                        </ModalFooter>
+                    </Modal>
+                </div>
             </Container>
         );
     }

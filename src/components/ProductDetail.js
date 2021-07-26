@@ -170,14 +170,6 @@ export class ProductDetail extends Component {
                                 </InputGroup>
                                 <p style={{ color: 'red' }}>{this.state.errorProduct.descriptionError}</p>
 
-                                {/* <InputGroup>
-                                    <InputGroupAddon addonType="prepend">
-                                        <InputGroupText>Image Src:</InputGroupText>
-                                    </InputGroupAddon>
-                                    <Input name="imageSrc" required id="imageSrc" onChange={(e) => this.imageOnchange(e)} value={this.state.product.imageSrc} />
-                                </InputGroup>
-                                <p style={{ color: 'red' }}>{this.state.errorProduct.imageSrcError}</p> */}
-
                                 <InputGroup>
                                     <InputGroupAddon addonType="prepend">
                                         <InputGroupText>Image Src:</InputGroupText>

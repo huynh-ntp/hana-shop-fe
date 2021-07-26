@@ -26,6 +26,9 @@ export class MainNav extends Component {
                     </ul>
 
                     <div className="nav-details">
+                        <Link className="link" to={'/viewCart'}>
+                            <ButtonToggle color="primary">ViewCart</ButtonToggle>
+                        </Link>
                         <Link className="link" to={'/login'}>
                             <ButtonToggle color="success">SignIn</ButtonToggle>
                         </Link>
@@ -58,7 +61,7 @@ export class MainNav extends Component {
                         <Link className="link" to={'/viewCart'}>
                             <ButtonToggle color="primary">ViewCart</ButtonToggle>
                         </Link>
-                        <Link className="link" to={'/userDetails'}>
+                        <Link className="link" to={'/user'}>
                             <ButtonToggle color="success">{this.state.fullName}</ButtonToggle>
                         </Link>
                         <Link className="link" to="/logout">
